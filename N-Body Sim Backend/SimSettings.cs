@@ -1,12 +1,14 @@
-﻿struct Settings
+﻿namespace N_Body_Sim_Backend
 {
-    public enum ForceCalculators { standard, orthtree, dynOrthtree};
-    public Settings(bool multi, ForceCalculators calculator)
+
+    public class Settings
     {
-        Multi = multi;
-        Calculator = calculator;
+        public string name { get; set; }
+        public int frames { get; set; }
+        public int bodies { get; set; }
+        public int smooth { get; set; }
+        public int timestep { get; set; }
+        public int initial { get; set; }
     }
 
-    public bool Multi { get; set; }
-    public ForceCalculators Calculator { get; set; }
 }
