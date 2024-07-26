@@ -1,17 +1,16 @@
 ﻿using System.Text.Json;
-
 namespace N_Body_Sim_Backend
 {
 
     public class Simulation
     {
         //Frames
-        public List<double[][]> frames;
         private string id;
         private double timeStep;
-        private Simulator sim;
+        private ShaderSimulator sim;
         private int numFrames;
         private int dimensionality = 2;
+        private int stepsPerFrame;
 
         private class simData
         {
@@ -21,49 +20,23 @@ namespace N_Body_Sim_Backend
 
         public Simulation(Settings settings)
         {
-            frames = new List<double[][]>();
-            frames.Add(DefaultSims.getStarting(settings.initial,settings.bodies));
             numFrames = settings.frames;
             id = settings.name;
             timeStep = settings.timestep;
+            stepsPerFrame = settings.stepsPerFrame;
             dimensionality = 2;
-            sim = new Simulator(settings.smooth);
+            sim = new ShaderSimulator(settings.smooth, DefaultSims.getStarting(settings.initial, settings.bodies));
         }
 
         public void start()
         {
-            while (frames.Count < numFrames)
-            {
-                 addFrame();
-            }
+            sim.runSim(numFrames, (float)timeStep, stepsPerFrame);
         }
         
-        private void addFrame()
-        {
-            double[][] currentFrame = frames.Last();
-            double[][] nextFrame = sim.stepFrame(timeStep, currentFrame);
-            frames.Add(nextFrame);
-        }
 
         public string getData()
         {
-            double[][][] data = new double[frames.Count][][];
-            for(int i = 0; i < data.Length; i++)
-            {
-                var frame = frames[i];
-                double[][] frameData = new double[frame.Length][];
-                for(int z = 0; z < frame.Length; z++)
-                {
-                    var particle = frame[z];
-                    double[] particleData = new double[dimensionality];
-                    for(int y = 1; y < 1+ dimensionality; y++)
-                    {
-                        particleData[y - 1] = particle[y];
-                    }
-                    frameData[z] = particleData;
-                }
-                data[i] = frameData;
-            }
+            double[][][] data = sim.getData();
             return JsonSerializer.Serialize( new simData { data = data, id = id});
         }
     }

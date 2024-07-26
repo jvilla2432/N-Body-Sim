@@ -9,6 +9,8 @@
         public int smooth { get; set; }
         public int timestep { get; set; }
         public int initial { get; set; }
+
+        public int stepsPerFrame { get; set; }
     }
 
 }

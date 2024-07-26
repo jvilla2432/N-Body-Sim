@@ -1,8 +1,8 @@
-﻿
-//particle format
+﻿//particle format
 // mass x y z vx vy vz ax ay az (etc for more dimensions) length of dimensions * 3 + 1
 // particles is [numParticles][dimensions * 3 + 1]
-
+using ComputeSharp;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace N_Body_Sim_Backend
 {
 
@@ -11,14 +11,47 @@ namespace N_Body_Sim_Backend
         private static double G = Math.Pow(6.6743d, -11d);
         public static int dimensions = 2;
         private double soft;
-        private static double gSoft;
+        private List<double[][]> frames = new List<double[][]>();
 
-        public Simulator(double softFactor)
+
+        public Simulator(double softFactor, double[][] startingFrame)
         {
             soft = softFactor;
+            frames.Add(startingFrame);
         }
-        public double[][] stepFrame(double deltaT, double[][] particles)
+
+        public void runSim(int numFrames, double timeStep, double stepPerFrame)
         {
+            while (frames.Count < numFrames)
+            {
+                stepFrame(timeStep);
+            }
+        }
+
+        public double[][][] getData()
+        {
+            double[][][] data = new double[frames.Count][][];
+            for (int i = 0; i < data.Length; i++)
+            {
+                var frame = frames[i];
+                double[][] frameData = new double[frame.Length][];
+                for (int z = 0; z < frame.Length; z++)
+                {
+                    var particle = frame[z];
+                    double[] particleData = new double[dimensions];
+                    for (int y = 1; y < 1 + dimensions; y++)
+                    {
+                        particleData[y - 1] = particle[y];
+                    }
+                    frameData[z] = particleData;
+                }
+                data[i] = frameData;
+            }
+            return data;
+        }
+        private void stepFrame(double deltaT)
+        {
+            double[][] particles = frames.Last();
             int numParticles = particles.Length;
             double[][] nextStep = new double[numParticles][];
             Parallel.For(0, particles.Length, currentParticle => {
@@ -47,7 +80,7 @@ namespace N_Body_Sim_Backend
                 }
 
             });
-            return nextStep;
+            frames.Add(nextStep);
         }
 
         private void addForce(double[] particle1, double[] particle2, double[] forceVec, int offset = 0)

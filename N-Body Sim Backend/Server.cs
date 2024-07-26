@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-
 namespace N_Body_Sim_Backend
 {
     public class Server

@@ -2,7 +2,6 @@
 {
     public static class DefaultSims
     {
-
         public static double[][] getStarting(int starting, int bodies)
         {
             if(starting == 0)
@@ -30,6 +29,7 @@
             }
             return circles;
         }
+
         public static double[][] start = new double[3][] { 
             new double[7]{ 10, 0, 0 , 0, 0, 0, 0},
             new double[7]{ 10, 50, 50, 0, 0 ,0 ,0 },
