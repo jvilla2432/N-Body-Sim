@@ -35,23 +35,34 @@ int numParticles, float smooth) : IComputeShader
             float distSqr = 0;
             Particle curr = buffer[ThreadIds.X];
             curr.AccelNxt = 0;
-            for (int i = 0; i < ThreadIds.X; i++)
+            //for (int i = 0; i < ThreadIds.X; i++)
+            //{
+            //    Particle next = buffer[i];
+            //    distSqr = Hlsl.Distance(curr.Pos, next.Pos);
+            //    //Accel is temp used as force here
+            //    float force = (G * curr.Mass * next.Mass) / (distSqr + smoothSqr);
+            //    curr.AccelNxt += force * (next.Pos - curr.Pos) / Hlsl.Sqrt(distSqr);
+            //}
+            //for (int i = ThreadIds.X+1; i < numParticles; i++)
+            //{
+            //    Particle next = buffer[i];
+            //    distSqr = Hlsl.Distance(curr.Pos, next.Pos);
+            //    //Accel is temp used as force here
+            //    float force = (G * curr.Mass * next.Mass) / (distSqr + smoothSqr);
+            //    curr.AccelNxt += force * (next.Pos - curr.Pos) / Hlsl.Sqrt(distSqr);
+            //}
+            float force = 0;
+            for (int i = 0; i < numParticles; i++)
             {
                 Particle next = buffer[i];
-                distSqr = Hlsl.Distance(curr.Pos, next.Pos);
+                distSqr = Hlsl.Distance(curr.Pos, next.Pos) + 1e-10f;
                 //Accel is temp used as force here
-                float force = (G * curr.Mass * next.Mass) / (distSqr + smoothSqr);
-                curr.AccelNxt += force * (next.Pos - curr.Pos) / Hlsl.Sqrt(distSqr);
+                force = (G * curr.Mass * next.Mass) / (distSqr + smoothSqr);
+                curr.AccelNxt += force * (next.Pos - curr.Pos) * Hlsl.Rsqrt(distSqr);
             }
-            for (int i = ThreadIds.X+1; i < numParticles; i++)
-            {
-                Particle next = buffer[i];
-                distSqr = Hlsl.Distance(curr.Pos, next.Pos);
-                //Accel is temp used as force here
-                float force = (G * curr.Mass * next.Mass) / (distSqr + smoothSqr);
-                curr.AccelNxt += force * (next.Pos - curr.Pos) / Hlsl.Sqrt(distSqr);
-            }
-
+            distSqr = Hlsl.Distance(curr.Pos, curr.Pos) + 1e-10f;
+            force = (G * curr.Mass * curr.Mass) / (distSqr + smoothSqr);
+            curr.AccelNxt -= force * (curr.Pos - curr.Pos) / Hlsl.Rsqrt(distSqr);
             curr.AccelNxt /= curr.Mass;
             buffer[ThreadIds.X] = curr;
         }
