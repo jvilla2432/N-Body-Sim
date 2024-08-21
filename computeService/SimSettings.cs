@@ -1,4 +1,4 @@
-﻿namespace N_Body_Sim_Backend
+﻿namespace computeService
 {
 
     public class Settings
@@ -11,12 +11,6 @@
         public int initial { get; set; }
 
         public int stepsPerFrame { get; set; }
-    }
-
-    public class simData
-    {
-        public double[][][] data { get; set; }
-        public string id { get; set; }
     }
 
 }

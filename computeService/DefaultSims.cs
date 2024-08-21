@@ -1,4 +1,4 @@
-﻿namespace N_Body_Sim_Backend
+﻿namespace computeService
 {
     public static class DefaultSims
     {

@@ -1,22 +1,23 @@
 ﻿using System.Diagnostics;
+using computeService;
+using Grpc.Net.Client;
+
 namespace N_Body_Sim_Backend
 {
     public class Server
     {
         private WebApplication app;
-        public Server(WebApplication startingApp)
+       
+        public Server(WebApplication startingApp, String[] clusters)
         {
             app = startingApp;
-            Stopwatch sw = new Stopwatch();
+            var distrubtor = new Distributor(clusters);
+
             app.MapPost("/startSim", async (Settings settings) => {
-                Simulation sim = new Simulation(settings);
-                sw.Restart();
-                sim.start();
-                await Task.Run(() => sim.start());
-                sw.Stop();
-                Console.WriteLine(settings.name + "took " + sw.Elapsed.ToString());
-                return Results.Ok(sim.getData());
-               
+                Task<string> dist = distrubtor.RequestSimAsync(settings);
+                string data = await dist;
+                Console.WriteLine("Reply! " + data);   
+                return Results.Ok(data);
             });
         }
 

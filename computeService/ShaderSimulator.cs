@@ -2,7 +2,7 @@
 // mass x y z vx vy vz ax ay az (etc for more dimensions) length of dimensions * 3 + 1
 // particles is [numParticles][dimensions * 3 + 1]
 using ComputeSharp;
-namespace N_Body_Sim_Backend
+namespace computeService
 {
     public struct Particle
     {
@@ -75,7 +75,8 @@ int numParticles, float smooth) : IComputeShader
         private double soft;
         private List<double[][]> frames = new List<double[][]>();
         private Particle[] initalFrame;
-     
+        private ReadWriteBuffer<Particle> buffer;
+
         public ShaderSimulator(double softFactor, double[][] startingFrame)
         {
             soft = softFactor;
@@ -86,34 +87,36 @@ int numParticles, float smooth) : IComputeShader
     , (float)startingFrame[i][3], (float)startingFrame[i][4], (float)startingFrame[i][5], (float)startingFrame[i][6]);
             });
             initalFrame = startFrame;
-            
+
         }
 
+        public void initializeSim()
+        {
+            buffer = GraphicsDevice.GetDefault().AllocateReadWriteBuffer(initalFrame);
+        }
+
+        //The buffer contains the next frame to read 
         public void runSim(int numFrames, float timeStep, float physicsSteps)
         {
             Particle[] readFrame = new Particle[initalFrame.Length];
-            using ReadWriteBuffer<Particle> buffer = GraphicsDevice.GetDefault().AllocateReadWriteBuffer(initalFrame);
-            readFrame = initalFrame;
             Double[][] frame = new Double[readFrame.Length][];
-            Parallel.For(0, readFrame.Length, i => {
-                frame[i] = [readFrame[i].Pos.X, readFrame[i].Pos.Y];
-            });
-            frames.Add(frame);
-            while (frames.Count < numFrames)
+            frames.Clear();
+            for (int z = 0; z < numFrames; z++)
             {
-                for (int i = 0; i< physicsSteps; i++)
+                buffer.CopyTo(readFrame);
+                Console.WriteLine("haiii");
+                frame = new Double[readFrame.Length][];
+                Parallel.For(0, readFrame.Length, i => {
+                    frame[i] = [readFrame[i].Pos.X, readFrame[i].Pos.Y];
+                });
+                frames.Add(frame);
+                for (int i = 0; i < physicsSteps; i++)
                 {
-                    GraphicsDevice.GetDefault().For(buffer.Length, 
+                    GraphicsDevice.GetDefault().For(buffer.Length,
                         new ProcessFrame(buffer, buffer.Length, (float)soft));
                     GraphicsDevice.GetDefault().For(buffer.Length,
                         new UpdatePosition(buffer, timeStep));
                 }
-                buffer.CopyTo(readFrame);
-                frame = new Double[readFrame.Length][];
-                Parallel.For(0, readFrame.Length, i => {
-                    frame[i] = [readFrame[i].Pos.X,readFrame[i].Pos.Y];
-                });
-                frames.Add(frame);
             }
         }
 
@@ -121,9 +124,6 @@ int numParticles, float smooth) : IComputeShader
         {
             return frames.ToArray();
         }
-
-   
-
 
     }
 

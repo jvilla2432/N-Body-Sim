@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option csharp_namespace = "computeService";
+
+package compute;
+
+// The simluation compute service definition.
+service ComputeSim {
+  // Sends a greeting
+  rpc SendSimulation (SimulationRequest) returns (stream SimulationData);
+}
+
+// The request message containing the user's name.
+message SimulationRequest {
+  string name = 1;
+  int32 frames = 2;
+  int32 bodies = 3;
+  int32 smooth = 4;
+  int32 timestep = 5;
+  int32 intial = 6;
+  int32 stepsPerFrame = 7;
+}
+
+// The response message containing the greetings.
+message SimulationData {
+  string data = 1;
+  int32 frames = 2;
+}

@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32414.318
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "N-Body Sim Backend", "N-Body Sim Backend.csproj", "{38323319-F6AB-4C7E-A156-2CA92D089166}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "N-Body Sim Backend", "N-Body Sim Backend.csproj", "{38323319-F6AB-4C7E-A156-2CA92D089166}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "computeService", "..\computeService\computeService.csproj", "{90D40D48-A999-4B7D-8837-2D65173479A5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{38323319-F6AB-4C7E-A156-2CA92D089166}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38323319-F6AB-4C7E-A156-2CA92D089166}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38323319-F6AB-4C7E-A156-2CA92D089166}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90D40D48-A999-4B7D-8837-2D65173479A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90D40D48-A999-4B7D-8837-2D65173479A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90D40D48-A999-4B7D-8837-2D65173479A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90D40D48-A999-4B7D-8837-2D65173479A5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

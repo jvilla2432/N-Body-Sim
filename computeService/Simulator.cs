@@ -3,7 +3,7 @@
 // particles is [numParticles][dimensions * 3 + 1]
 using ComputeSharp;
 using static System.Runtime.InteropServices.JavaScript.JSType;
-namespace N_Body_Sim_Backend
+namespace computeService
 {
 
     class Simulator
